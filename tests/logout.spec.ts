@@ -19,7 +19,7 @@ const ldapUser = {
 
 /* ==================== TEST SUITE ==================== */
 
-test.describe('Logout Module - User Logout Validation', () => {
+test.describe('@regression Logout Module - User Logout Validation', () => {
 
   test.beforeEach(async ({ loginPage }) => {
     Logger.info('Navigating to Login Page');

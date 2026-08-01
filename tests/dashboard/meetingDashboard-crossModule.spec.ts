@@ -3,7 +3,7 @@ import { expect } from '@playwright/test';
 import { Assertions } from '@utils/assertions';
 import { Logger } from '@utils/logger';
 
-test.describe('@regression Cross Module Validation - Meetings To Dashboard',
+test.describe('Cross Module Validation - Meetings To Dashboard',
   () => {
 
     test.setTimeout(120000);

@@ -36,7 +36,7 @@ const loginData: LoginTestData[] = (credentials as any[]).map(({ username, passw
   };
 });
 
-test.describe('Login Module - Data Driven Authentication (CSV)', () => {
+test.describe('@regression Login Module - Data Driven Authentication (CSV)', () => {
   test.beforeEach(async ({ loginPage }) => {
     Logger.info('Navigating to Login Page');
     await loginPage.goto();

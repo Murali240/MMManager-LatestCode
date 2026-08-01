@@ -38,7 +38,7 @@ const loginData: LoginTestData[] = (credentials as UserCredentials[]).map(
   }
 );
 
-test.describe('Login Module - Data Driven Authentication (JSON)', () => {
+test.describe('@regression Login Module - Data Driven Authentication (JSON)', () => {
   test.beforeEach(async ({ loginPage }) => {
     Logger.info('Navigating to Login Page');
     await loginPage.goto();
