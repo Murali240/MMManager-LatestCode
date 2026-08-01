@@ -4,11 +4,19 @@
 
 ```
 tests/
-└── programs/
-    ├── programs-list.spec.ts      ← TC-PP-001 to TC-PP-010
-    ├── programs-add.spec.ts       ← TC-AP-001 to TC-AP-020
-    ├── programs-edit.spec.ts      ← TC-EP-001 to TC-EP-020
-    └── programs-e2e.spec.ts       ← End-to-end workflows
+├── dashboard/
+│   ├── dashboard-load.spec.ts        ← TC-DB-001 to TC-DB-010
+│   └── scheduleFromDashboard.spec.ts ← TC-DB-011 to TC-DB-020
+├── meetings/
+│   ├── meetings-create.spec.ts       ← TC-MT-001 to TC-MT-010
+│   ├── meetings-reschedule.spec.ts   ← TC-MT-011 to TC-MT-020
+│   └── meetings-e2e.spec.ts          ← End-to-end workflows
+├── diary/
+│   └── diaryDayViewMeetings.spec.ts  ← TC-DI-001 to TC-DI-010
+└── data-driven/
+  ├── csv-login.spec.ts
+  ├── json-login.spec.ts
+  └── excel-login.spec.ts
 ```
 
 **Why separate files?**
@@ -25,23 +33,24 @@ tests/
 ### **Tag Levels:**
 
 ```typescript
-test.describe('Programs List Page @programs @list', () => {
+test.describe('Meetings List Page @meetings @list', () => {
   //                              ^^^^^^^^  ^^^^^
   //                              Module    Feature
   
-  test('TC-PP-001: View Page @smoke @regression', async () => {
+  test('TC-MT-001: View Page @smoke @regression', async () => {
     //                        ^^^^^^  ^^^^^^^^^^
     //                        Priority  Suite
   });
 });
 ```
 
-### **Module Tags:**
+### **Module Tags (MM Manager)**:
 ```typescript
-@programs       // All program tests
-@grants         // All grant tests
-@applications   // All application tests
-@users          // All user/registration tests
+@dashboard      // Dashboard module tests
+@meetings       // Meetings module tests
+@diary          // Diary / calendar tests
+@data-driven    // CSV/Excel/JSON data-driven tests
+@users          // User/registration tests
 ```
 
 ### **Feature Tags:**
@@ -54,12 +63,13 @@ test.describe('Programs List Page @programs @list', () => {
 @filter         // Filter tests
 ```
 
-### **Priority Tags:**
+### **Priority Tags (usage guidance)**:
 ```typescript
-@smoke          // Critical tests (run first)
-@regression     // Full test suite
+@smoke          // Critical, fast tests that verify core flows (short, must-pass)
+@regression     // Comprehensive suite; includes smoke + full coverage
 @negative       // Error/validation tests
 @edge           // Edge case tests
+@e2e            // Full end-to-end workflows (long-running)
 ```
 
 ### **Custom Tags:**
@@ -76,14 +86,14 @@ test.describe('Programs List Page @programs @list', () => {
 
 ### **Run by File:**
 ```bash
-# Run all programs list tests
-npx playwright test programs-list.spec.ts
+# Run dashboard tests
+npx playwright test tests/dashboard/
 
-# Run all programs add tests
-npx playwright test programs-add.spec.ts
+# Run meetings tests
+npx playwright test tests/meetings/
 
-# Run all programs tests
-npx playwright test tests/programs/
+# Run data-driven tests
+npx playwright test tests/data-driven/
 ```
 
 ### **Run by Tag:**
@@ -97,17 +107,17 @@ npx playwright test --grep @regression
 # Run ONLY negative tests
 npx playwright test --grep @negative
 
-# Run all programs module tests
-npx playwright test --grep @programs
+# Run all meetings module tests
+npx playwright test --grep @meetings
 
-# Run only programs list tests
-npx playwright test --grep "@programs.*@list"
+# Run only meetings list tests
+npx playwright test --grep "@meetings.*@list"
 ```
 
 ### **Combine Tags (AND):**
 ```bash
-# Run smoke tests for programs module
-npx playwright test --grep "@programs.*@smoke"
+# Run smoke tests for meetings module
+npx playwright test --grep "@meetings.*@smoke"
 
 # Run regression tests for add feature
 npx playwright test --grep "@add.*@regression"
@@ -125,10 +135,10 @@ npx playwright test --grep-invert @slow
 ### **Run Specific Test:**
 ```bash
 # By test ID
-npx playwright test -g "TC-PP-001"
+npx playwright test -g "TC-MT-001"
 
 # By test name
-npx playwright test -g "View Programs Page"
+npx playwright test -g "Create Meeting (Basic)"
 ```
 
 ### **Run with UI Mode:**
@@ -142,7 +152,7 @@ npx playwright test --grep @smoke --ui
 
 ### **Run in Headed Mode (See Browser):**
 ```bash
-npx playwright test programs-list.spec.ts --headed
+npx playwright test tests/meetings/meetings-create.spec.ts --headed
 ```
 
 ---
@@ -163,65 +173,41 @@ npx playwright test programs-list.spec.ts --headed
 
 ## 🎯 **Your Test Scenarios - Organized:**
 
-### **File 1: programs-list.spec.ts**
+### **File 1: meetings-create.spec.ts**
 ```typescript
-test.describe('Programs List Page @programs @list', () => {
-  
-  test('TC-PP-001: View Programs Page @smoke @regression', async () => {
-    // Your scenario:
-    // - User is logged in as staff
-    // - User navigates to programs page
-    // - Page title should display as "Programs"
-    // - "Add New Program" button is visible
-    // - Filter options (Active, Inactive, All) are visible
+test.describe('Create Meeting Flow @meetings @create', () => {
+
+  // Critical flow - include in @smoke and @regression
+  test('TC-MT-001: Create Meeting (Basic) @smoke @regression', async () => {
+    // - User logged in as scheduler
+    // - User navigates to schedule meeting
+    // - Meeting created successfully and visible on diary
   });
 
-  test('TC-PP-002: Add New Program Navigation @smoke @regression', async () => {
-    // Your scenario:
-    // - User is on Programs list page
-    // - User clicks "Add New Program" button
-    // - User is navigated to Add Program page
-    // - Page title shows "Add Program"
-  });
+  // Important but not always smoke
+  test('TC-MT-002: Create Meeting with Attendees @regression', async () => { });
 
-  test('TC-PP-003: Filter Active Programs @regression', async () => { });
-  test('TC-PP-004: Filter Inactive Programs @regression', async () => { });
-  test('TC-PP-005: Search by Program Code @regression', async () => { });
-  test('TC-PP-006: Search by Program Name @regression', async () => { });
-  test('TC-PP-007: Pagination Next @regression', async () => { });
-  test('TC-PP-008: Edit Program Navigation @regression', async () => { });
-  
+  test('TC-MT-003: Create Meeting with Recurrence @regression', async () => { });
+
   // Negative tests
-  test('TC-PP-NEG-001: Search Non-Existent Code @negative @regression', async () => { });
+  test('TC-MT-NEG-001: Create Meeting Without Required Fields @negative @regression', async () => { });
 });
 ```
 
-### **File 2: programs-add.spec.ts**
+### **File 2: meetings-reschedule.spec.ts**
 ```typescript
-test.describe('Add Program Page @programs @add', () => {
-  
-  test('TC-AP-001: Create Program All Fields @smoke @regression', async () => { });
-  test('TC-AP-002: Create Program Required Fields @smoke @regression', async () => { });
-  test('TC-AP-003: Verify Add Page Elements @smoke', async () => { });
-  test('TC-AP-004: Fill Individual Fields @regression', async () => { });
-  test('TC-AP-005: Cancel Program Creation @regression', async () => { });
-  
-  // Negative tests
-  test('TC-AP-NEG-001: Submit Without Required Fields @negative @regression', async () => { });
-  test('TC-AP-NEG-002: Invalid Budget Amount @negative @regression', async () => { });
-  test('TC-AP-NEG-003: End Date Before Start Date @negative @regression', async () => { });
+test.describe('Reschedule / Update Meeting @meetings @reschedule', () => {
+  test('TC-MT-011: Reschedule Meeting (Happy Path) @regression', async () => { });
+  test('TC-MT-012: Update Meeting Details @regression', async () => { });
+  test('TC-MT-013: Change Attendees @regression', async () => { });
 });
 ```
 
-### **File 3: programs-edit.spec.ts**
+### **File 3: diaryDayViewMeetings.spec.ts**
 ```typescript
-test.describe('Edit Program Page @programs @edit', () => {
-  
-  test('TC-EP-001: View Edit Page After Creation @smoke @regression', async () => { });
-  test('TC-EP-002: Navigate Between Tabs @regression', async () => { });
-  test('TC-EP-003: Add Contact Information @regression', async () => { });
-  test('TC-EP-004: Upload Document @regression', async () => { });
-  test('TC-EP-005: Configure Required Tabs @regression', async () => { });
+test.describe('Diary / Day View @diary', () => {
+  test('TC-DI-001: Diary Day View shows scheduled meetings @smoke @regression', async () => { });
+  test('TC-DI-002: Navigate between days @regression', async () => { });
 });
 ```
 
@@ -234,18 +220,17 @@ test.describe('Edit Program Page @programs @edit', () => {
 test('TC-[MODULE]-[NUMBER]: [Description] @tags', async () => { });
 
 // Examples:
-test('TC-PP-001: View Programs Page @smoke @regression', async () => { });
-test('TC-AP-001: Create Program @smoke @regression', async () => { });
-test('TC-EP-001: Edit Program @smoke @regression', async () => { });
-test('TC-AP-NEG-001: Submit Without Fields @negative @regression', async () => { });
-test('TC-AP-EDGE-001: Max Length Code @edge @regression', async () => { });
+test('TC-MT-001: Create Meeting (Basic) @smoke @regression', async () => { });
+test('TC-MT-011: Reschedule Meeting @smoke @regression', async () => { });
+test('TC-DI-001: Edit Diary Entry @smoke @regression', async () => { });
+test('TC-MT-NEG-001: Submit Without Fields @negative @regression', async () => { });
+test('TC-MT-EDGE-001: Max Length Field @edge @regression', async () => { });
 
 // Module Codes:
-// PP = Programs Page (List)
-// AP = Add Program
-// EP = Edit Program
-// GP = Grants Page
-// AG = Add Grant
+// DB = Dashboard
+// MT = Meetings
+// DI = Diary
+// DD = Data-Driven
 // UP = Users/Registration
 ```
 
@@ -260,7 +245,7 @@ test('TC-AP-EDGE-001: Max Length Code @edge @regression', async () => { });
     "test": "playwright test",
     "test:smoke": "playwright test --grep @smoke",
     "test:regression": "playwright test --grep @regression",
-    "test:programs": "playwright test --grep @programs",
+    "test:meetings": "playwright test --grep @meetings",
     "test:negative": "playwright test --grep @negative",
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed"
@@ -293,37 +278,37 @@ jobs:
 test('View page', async () => { });
 
 // ✅ GOOD - Has tags
-test('TC-PP-001: View page @smoke @regression', async () => { });
+test('TC-MT-001: View page @smoke @regression', async () => { });
 ```
 
 ### **2. Use Multiple Tags:**
 ```typescript
 // Every test should have at least 2 tags:
-// 1. Module/Feature tag (@programs @list)
+// 1. Module/Feature tag (@meetings @list)
 // 2. Priority tag (@smoke or @regression or @negative)
 
-test('TC-PP-001: View page @programs @list @smoke @regression', async () => { });
+test('TC-MT-001: View page @meetings @list @smoke @regression', async () => { });
 ```
 
 ### **3. Group Related Tests:**
 ```typescript
 test.describe('Filter Tests @filter', () => {
-  test('TC-PP-003: Active filter @regression', async () => { });
-  test('TC-PP-004: Inactive filter @regression', async () => { });
-  test('TC-PP-005: All filter @regression', async () => { });
+  test('TC-MT-003: Active filter @regression', async () => { });
+  test('TC-MT-004: Inactive filter @regression', async () => { });
+  test('TC-MT-005: All filter @regression', async () => { });
 });
 ```
 
 ### **4. Use Consistent Test IDs:**
 ```typescript
-// File: programs-list.spec.ts
-TC-PP-001, TC-PP-002, TC-PP-003...  ✅
+// File: meetings-create.spec.ts
+TC-MT-001, TC-MT-002, TC-MT-003...  ✅
 
-// File: programs-add.spec.ts
-TC-AP-001, TC-AP-002, TC-AP-003...  ✅
+// File: meetings-reschedule.spec.ts
+TC-MT-011, TC-MT-012, TC-MT-013...  ✅
 
 // Don't mix:
-TC-PP-001, TC-AP-002, TC-PP-003...  ❌
+TC-MT-001, TC-MT-012, TC-MT-003...  ❌
 ```
 
 ---
@@ -332,14 +317,14 @@ TC-PP-001, TC-AP-002, TC-PP-003...  ❌
 
 ### **Step 1: Create test files** (This week)
 ```bash
-tests/programs/
-├── programs-list.spec.ts    ← Start here (5-10 tests)
-├── programs-add.spec.ts     ← Week 2 (10-15 tests)
-└── programs-edit.spec.ts    ← Week 3 (10-15 tests)
+tests/meetings/
+├── meetings-create.spec.ts    ← Start here (5-10 tests)
+├── meetings-reschedule.spec.ts← Week 2 (10-15 tests)
+└── meetings-e2e.spec.ts       ← Week 3 (10-15 tests)
 ```
 
 ### **Step 2: Tag appropriately**
-- All tests get module tags: `@programs @list`
+- All tests get module tags: `@meetings @list`
 - Critical tests get: `@smoke`
 - All tests get: `@regression`
 - Error tests get: `@negative`
@@ -347,7 +332,7 @@ tests/programs/
 ### **Step 3: Run incrementally**
 ```bash
 # Run what you've written so far
-npx playwright test programs-list.spec.ts --ui
+npx playwright test tests/meetings/ --ui
 
 # Run smoke tests
 npx playwright test --grep @smoke
@@ -362,7 +347,7 @@ npx playwright test --grep @smoke
 | **Separate spec files?** | ✅ YES - One file per page/feature |
 | **Use tags?** | ✅ YES - Multiple tags per test |
 | **How to run tags?** | `npx playwright test --grep @smoke` |
-| **Your TC-PP-001 scenario?** | ✅ Perfect! Already implemented |
-| **Your TC-PP-002 scenario?** | ✅ Perfect! Already implemented |
+| **Your TC-MT-001 scenario?** | ✅ Perfect! Already implemented |
+| **Your TC-MT-002 scenario?** | ✅ Perfect! Already implemented |
 
 **You have everything you need to start writing tests!** 🎉

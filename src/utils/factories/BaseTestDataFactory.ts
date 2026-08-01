@@ -8,26 +8,20 @@ import fs from 'fs';
 /* ==================== DATA TRACKER (Shared) ==================== */
 
 export interface TrackedData {
-  programs: Array<{ code: string; name: string; createdAt: string }>;
-  grants: Array<{ code: string; name: string; programCode?: string; createdAt: string }>;
-  applications: Array<{ id: string; email: string; createdAt: string }>;
-  users: Array<{ email: string; password: string; userType: string; createdAt: string }>;
-  fundingSources: Array<{ code: string; name: string; createdAt: string }>;
+  users: Array<{ email: string; password: string; role: string; createdAt: string }>;
+  meetings: Array<{ id: string; title: string; scheduledFor: string; status?: string; createdAt: string }>;
 }
 
 /**
  * Centralized Data Tracker
- * Used by all factories to track created test data
+ * Used by factories to track created test data for cleanup or reporting
  */
 export class TestDataTracker {
   private static trackingFile = './.test-data-tracker.json';
   
   private static data: TrackedData = {
-    programs: [],
-    grants: [],
-    applications: [],
     users: [],
-    fundingSources: []
+    meetings: []
   };
 
   /**
@@ -49,65 +43,16 @@ export class TestDataTracker {
   }
 
   /**
-   * Track program
-   */
-  static trackProgram(code: string, name: string): void {
-    this.load();
-    const exists = this.data.programs.find(p => p.code === code);
-    if (!exists) {
-      this.data.programs.push({
-        code,
-        name,
-        createdAt: new Date().toISOString()
-      });
-      this.save();
-    }
-  }
-
-  /**
-   * Track grant
-   */
-  static trackGrant(code: string, name: string, programCode?: string): void {
-    this.load();
-    const exists = this.data.grants.find(g => g.code === code);
-    if (!exists) {
-      this.data.grants.push({
-        code,
-        name,
-        programCode,
-        createdAt: new Date().toISOString()
-      });
-      this.save();
-    }
-  }
-
-  /**
-   * Track application
-   */
-  static trackApplication(id: string, email: string): void {
-    this.load();
-    const exists = this.data.applications.find(a => a.id === id);
-    if (!exists) {
-      this.data.applications.push({
-        id,
-        email,
-        createdAt: new Date().toISOString()
-      });
-      this.save();
-    }
-  }
-
-  /**
    * Track user
    */
-  static trackUser(email: string, password: string, userType: string): void {
+  static trackUser(email: string, password: string, role: string): void {
     this.load();
     const exists = this.data.users.find(u => u.email === email);
     if (!exists) {
       this.data.users.push({
         email,
         password,
-        userType,
+        role,
         createdAt: new Date().toISOString()
       });
       this.save();
@@ -115,15 +60,22 @@ export class TestDataTracker {
   }
 
   /**
-   * Track funding source
+   * Track meeting
    */
-  static trackFundingSource(code: string, name: string): void {
+  static trackMeeting(
+    id: string,
+    title: string,
+    scheduledFor: string,
+    status?: string
+  ): void {
     this.load();
-    const exists = this.data.fundingSources.find(f => f.code === code);
+    const exists = this.data.meetings.find(m => m.id === id);
     if (!exists) {
-      this.data.fundingSources.push({
-        code,
-        name,
+      this.data.meetings.push({
+        id,
+        title,
+        scheduledFor,
+        status,
         createdAt: new Date().toISOString()
       });
       this.save();
@@ -131,43 +83,43 @@ export class TestDataTracker {
   }
 
   /**
-   * Get tracked data
+   * Get tracked users
    */
-  static getPrograms(): Array<{ code: string; name: string; createdAt: string }> {
-    this.load();
-    return this.data.programs;
-  }
-
-  static getGrants(): Array<{ code: string; name: string; programCode?: string; createdAt: string }> {
-    this.load();
-    return this.data.grants;
-  }
-
-  static getApplications(): Array<{ id: string; email: string; createdAt: string }> {
-    this.load();
-    return this.data.applications;
-  }
-
-  static getUsers(): Array<{ email: string; password: string; userType: string; createdAt: string }> {
+  static getUsers(): Array<{ email: string; password: string; role: string; createdAt: string }> {
     this.load();
     return this.data.users;
   }
 
-  static getFundingSources(): Array<{ code: string; name: string; createdAt: string }> {
+  /**
+   * Get tracked meetings
+   */
+  static getMeetings(): Array<{ id: string; title: string; scheduledFor: string; status?: string; createdAt: string }> {
     this.load();
-    return this.data.fundingSources;
+    return this.data.meetings;
   }
 
   /**
    * Get last registered user
    */
-  static getLastUser(userType?: string) {
+  static getLastUser(role?: string) {
     this.load();
-    if (userType) {
-      const filtered = this.data.users.filter(u => u.userType === userType);
+    if (role) {
+      const filtered = this.data.users.filter(u => u.role === role);
       return filtered.length > 0 ? filtered[filtered.length - 1] : null;
     }
     return this.data.users.length > 0 ? this.data.users[this.data.users.length - 1] : null;
+  }
+
+  /**
+   * Get last tracked meeting
+   */
+  static getLastMeeting(status?: string) {
+    this.load();
+    if (status) {
+      const filtered = this.data.meetings.filter(m => m.status === status);
+      return filtered.length > 0 ? filtered[filtered.length - 1] : null;
+    }
+    return this.data.meetings.length > 0 ? this.data.meetings[this.data.meetings.length - 1] : null;
   }
 
   /**
@@ -175,45 +127,27 @@ export class TestDataTracker {
    */
   static clearAll(): void {
     this.data = {
-      programs: [],
-      grants: [],
-      applications: [],
       users: [],
-      fundingSources: []
+      meetings: []
     };
     this.save();
   }
 
   /**
-   * Clear specific type
+   * Clear users
    */
-  static clearPrograms(): void {
-    this.load();
-    this.data.programs = [];
-    this.save();
-  }
-
-  static clearGrants(): void {
-    this.load();
-    this.data.grants = [];
-    this.save();
-  }
-
-  static clearApplications(): void {
-    this.load();
-    this.data.applications = [];
-    this.save();
-  }
-
   static clearUsers(): void {
     this.load();
     this.data.users = [];
     this.save();
   }
 
-  static clearFundingSources(): void {
+  /**
+   * Clear meetings
+   */
+  static clearMeetings(): void {
     this.load();
-    this.data.fundingSources = [];
+    this.data.meetings = [];
     this.save();
   }
 }

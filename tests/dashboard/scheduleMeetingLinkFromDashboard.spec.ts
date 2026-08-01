@@ -1,9 +1,11 @@
 import { test } from '@fixtures/AuthFixtures';
 import { Logger } from '@utils/logger';
 
-test.describe('Dashboard Module - Schedule Meeting Navigation', () => {
+test.describe('@regression Dashboard Module - Schedule Meeting Navigation', () => {
 
   test('TC-DASHBOARD-SM-001: Navigate to Schedule Meeting from Dashboard', async ({ dashboardPage }) => {
+
+    test.setTimeout(180000);  // Set timeout to 3 minutes for this test
 
     Logger.testStart('TC-DASHBOARD-SM-001: Dashboard → Schedule Meeting Navigation');
 

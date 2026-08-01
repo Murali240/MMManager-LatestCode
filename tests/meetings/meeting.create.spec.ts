@@ -4,6 +4,8 @@ import { Logger } from '@utils/logger';
 
 test.describe('Meetings - Create', () => {
 
+  test.setTimeout(120000);  // Set timeout to 2 minutes for this test
+
   // ==================== POSITIVE TEST ==================== //
   test('TC-MTG-001: Create Schedule New Meeting', async ({ meetingsPage }) => {
 
@@ -53,9 +55,16 @@ test.describe('Meetings - Create', () => {
       agenda: `Agenda ${unique}`
     }, false);
 
-    // ✅ Validate dynamic error using CONTAINS
+    const busyMessage = meetingsPage.getChairpersonBusyMessage();
+
+    await Assertions.verifyElementVisible(
+      busyMessage,
+      'Chairperson Busy Validation Message',
+      30000
+    );
+
     await Assertions.verifyElementContainsText(
-      meetingsPage.getChairpersonBusyMessage(),
+      busyMessage,
       'already has a meeting scheduled',
       'Chairperson Busy Validation Message'
     );

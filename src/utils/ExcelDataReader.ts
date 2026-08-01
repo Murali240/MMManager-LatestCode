@@ -112,7 +112,7 @@ export class ExcelDataReader {
       if (idx === 0) rec.role = 'admin';
       else if (idx > 0 && idx < total - 1) rec.role = 'ldap';
       else if (idx === total - 1) rec.role = 'admin';
-      else rec.role = 'unknown';
+      else rec.role = 'admin';
     }
 
     return rec;

@@ -2,13 +2,13 @@ import { test } from '@fixtures/AuthFixtures';
 import { Assertions } from '@utils/assertions';
 import { Logger } from '@utils/logger';
 
-test.describe('Meetings - Create Follow-up Meeting', () => {
+test.describe.only('Meetings - Create Follow-up Meeting', () => {
 
   test(
     'TC-MTG-001: Create Follow-up Meeting For Completed Status Meeting',
     async ({ meetingsPage }) => {
 
-      test.setTimeout(120000);
+      test.setTimeout(120000);  // Set timeout to 2 minutes for this test
 
       Logger.testStart(
         'TC-MTG-001: Create Follow-up Meeting For Completed Status Meeting'

@@ -63,7 +63,7 @@ test.describe('Meetings - Reschedule Meeting', () => {
 
       // ✅ Step 6: Increase From & To time by +1 hour
 
-      await meetingsPage.setRescheduleMeetingTime();
+      await meetingsPage.setRescheduleMeetingTimeTriple();
 
       // ✅ Step 7: Click OK button
 

@@ -1,50 +1,21 @@
 /**
- * Type definitions for the test framework
+ * Shared type definitions for the MM Manager test suite.
  */
 
 export interface UserCredentials {
   username: string;
   password: string;
-  email?: string;
 }
 
-export interface OrganizationCredentials extends UserCredentials {
-  organization: string;
-}
-
-export type AdministratorRole = 'Administrator';
-export type LDAPRole = 'LDAP';
-export type UserRole = AdministratorRole | LDAPRole;
-
-export interface TestData {
-  username: string;
-  password: string;
-  email: string;
-}
-
-export interface CsvData {
-  firstname: string;
-  lastname: string;
-  username: string;
-  password: string;
-}
-
-export interface ExcelData {
-  [key: string]: any;
-}
-
-export interface PageFixtures {
-  staffPage: any;
-  orgPage: any;
-  individualPage: any;
-}
+export type UserRole = 'Administrator' | 'LDAP';
 
 export interface EnvironmentVariables {
-  URL: string;
-  USERNAME: string;
-  PASSWORD: string;
-  INVALID_USERNAME: string;
-  INVALID_PASSWORD: string;
+  MMM_BASE_URL?: string;
+  MMM_ADMIN_USERNAME?: string;
+  MMM_ADMIN_PASSWORD?: string;
+  MMM_LDAP_USERNAME?: string;
+  MMM_LDAP_PASSWORD?: string;
   DEBUG?: string;
   HEADLESS?: string;
+  CI?: string;
 }

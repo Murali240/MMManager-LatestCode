@@ -14,6 +14,8 @@ export class LoginPage extends SharedComponents {
   readonly dashboardHeader: Locator;
   readonly loginErrorMessage: Locator;
 
+  readonly logoutButton: Locator;
+
   constructor(page: Page) {
     super(page);
 
@@ -27,6 +29,7 @@ export class LoginPage extends SharedComponents {
 
     this.dashboardHeader = this.page.locator(`//span[normalize-space()='Dashboard']`);
     this.loginErrorMessage = this.page.locator(`strong:has-text("Username or Password Incorrect")`);
+    this.logoutButton = page.getByText('Log out', { exact: true });
   }
 
   /* ==================== Navigation ==================== */
@@ -65,5 +68,18 @@ export class LoginPage extends SharedComponents {
     await this.waitForPageLoad();
 
     Logger.success(`✅ ${role} login completed successfully`);
+  }
+
+  /* ==================== Logout Action Method ==================== */
+  async logout(): Promise<void> {
+      Logger.step('Logging out from application');
+
+      await this.logoutButton.click();
+
+      await this.page.waitForURL('**/login', {
+          timeout: 30000
+      });
+
+      Logger.success('Logout successful');
   }
 }

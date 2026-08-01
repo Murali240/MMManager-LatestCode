@@ -141,6 +141,23 @@ export class DiaryPage extends SharedComponents {
     Logger.success('All Diary meetings printed successfully');
   }
 
+  // ==================================== FETCH ALL MEETING TITLES ====================
+  async getDayViewMeetingTitles(): Promise<string[]> {
 
+    await this.page.waitForLoadState('networkidle');
+
+    const meetingTitles =
+      await this.allMeetingsTitles.allTextContents();
+
+    const cleanedTitles = meetingTitles
+      .map(title => title.trim())
+      .filter(title => title.length > 0);
+
+    Logger.info(
+      `Retrieved ${cleanedTitles.length} meeting titles from Diary Day View`
+    );
+
+    return cleanedTitles;
+  }
 
 }

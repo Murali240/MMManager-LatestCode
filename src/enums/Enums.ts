@@ -1,5 +1,5 @@
 /**
- * Enums for the test framework
+ * Enums for the MM Manager test framework
  * Helps avoid typo errors and provides type safety
  */
 
@@ -8,43 +8,24 @@ export enum ExcelOutputType {
   CSV = 'csv'
 }
 
-
 export enum MainMenu {
   DASHBOARD = 'Dashboard',
   DIARY = 'Diary',
-  PROGRAMS = 'Programs',
-  GRANTS_MANAGEMENT = 'Grants Management',
-  FINANCIAL_MANAGEMENT = 'Financial Management'
+  MEETINGS = 'Meetings'
 }
 
 export enum SubMenu {
-  GRANTS = 'Grants',
-  APPLICATIONS = 'Applications',
-  AWARDS = 'Awards',
-  SUB_AWARDS = 'Sub Awards',
-  MASTER_FUNDING_SOURCES = 'Master Funding Sources'
+  SCHEDULED_MEETINGS = 'Scheduled Meetings'
 }
-
 
 export enum PageHeaders {
   DASHBOARD = 'Dashboard',
-  PROGRAMS = 'Programs',
-  GRANTS = 'Grants',
-  APPLICATIONS = 'Applications',
-  AWARDS = 'Awards',
-  SUB_AWARDS = 'Sub Awards',
-  MASTER_FUNDING_SOURCES = 'Master Funding Sources'
+  DIARY = 'Diary',
+  SCHEDULE_MEETING = 'Schedule Meeting',
+  EDIT_SCHEDULED_MEETING = 'Edit Scheduled Meeting',
+  CREATE_FOLLOW_UP_MEETING = 'Create Follow-up Meeting',
+  RESCHEDULE_MEETING = 'Reschedule Meeting'
 }
-
-export enum AddNewLinkText {
-  PROGRAM = 'Add New Program',
-  GRANT = 'Add New Grant',
-  APPLICATION = 'Add New Application',
-  AWARD = 'Add New Award',
-  SUB_AWARD = 'Add New Sub Award',
-  MASTER_FUNDING_SOURCE = 'Add New Master Funding Source'
-}
-
 
 export enum BrowserType {
   CHROMIUM = 'chromium',

@@ -9,7 +9,7 @@ function generate() {
     ['kmkrishna', 'Gangamma@33', 'ldap', 'success'],
     ['nsundar', 'Chinna@123456789', 'ldap', 'success'],
     ['spilli', '$!V@p@V!@2329', 'ldap', 'success'],
-    ['dummyUsername', 'dummyPassword@123', 'unknown', 'failure'],
+    ['dummyUsername', 'dummyPassword@123', 'admin', 'failure'],
   ];
 
   const ws = XLSX.utils.aoa_to_sheet(rows);

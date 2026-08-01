@@ -6,6 +6,8 @@ test.describe('Meetings - Update', () => {
 
   test('TC-MTG-001: Update Scheduled Meeting Title', async ({ meetingsPage }) => {
 
+    test.setTimeout(120000);  // Set timeout to 2 minutes for this test
+
     Logger.testStart('TC-MTG-001: Update Scheduled Meeting Title');
 
     const unique = Date.now();

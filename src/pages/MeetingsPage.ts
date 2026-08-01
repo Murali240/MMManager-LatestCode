@@ -138,6 +138,9 @@ export class MeetingsPage extends SharedComponents {
   `//h5[normalize-space()='Reschedule Meeting']`
   );
 
+  // Total meetings count in meetings list page
+  readonly meetingCountInfo = this.page.locator('#scheduleexample_info');
+
   /* ==================== NAVIGATION ==================== */
 
   async goto(): Promise<void> {
@@ -653,6 +656,53 @@ async setRescheduleMeetingTime(): Promise<void> {
   );
 }
 
+async setRescheduleMeetingTimeTriple(): Promise<void> {
+
+  /* ==================== FROM TIME +3 HOURS ==================== */
+
+  await this.waitForElement(
+    this.rescheduleFromTime,
+    30000
+  );
+
+  await this.rescheduleFromTime.click();
+
+  // ✅ +1 Hour
+  await this.upArrowIcons.nth(2).click();
+
+  // ✅ +2 Hour
+  await this.upArrowIcons.nth(2).click();
+
+  // ✅ +3 Hour
+  await this.upArrowIcons.nth(2).click();
+
+  Logger.success(
+    'Reschedule From Time increased by +3 hours'
+  );
+
+  /* ==================== TO TIME +3 HOURS ==================== */
+
+  await this.waitForElement(
+    this.rescheduleToTime,
+    30000
+  );
+
+  await this.rescheduleToTime.click();
+
+  // ✅ +1 Hour
+  await this.upArrowIcons.nth(4).click();
+
+  // ✅ +2 Hour
+  await this.upArrowIcons.nth(4).click();
+
+  // ✅ +3 Hour
+  await this.upArrowIcons.nth(4).click();
+
+  Logger.success(
+    'Reschedule To Time increased by +3 hours'
+  );
+}
+
 async waitForRescheduleMeetingPage(): Promise<void> {
 
   await this.waitForElement(
@@ -930,4 +980,38 @@ async createCompletedMeeting(
   getChairpersonBusyMessage(): Locator {
     return this.chairpersonBusyValidation;
   }
+
+  // Total meetings count in meeting list page
+  async getTotalMeetingsCount(): Promise<number> {
+
+  await this.waitForLoadingToComplete();
+
+  await this.page.waitForLoadState('networkidle');
+
+  await this.meetingCountInfo.waitFor({
+    state: 'visible',
+    timeout: 30000
+  });
+
+  const countText =
+    (await this.meetingCountInfo.innerText()).trim();
+
+  Logger.info(
+    `Meeting Count Text: ${countText}`
+  );
+
+  const match =
+    countText.match(/of\s+(\d+)\s+entries/i);
+
+  const totalMeetings =
+    match
+      ? Number(match[1])
+      : 0;
+
+  Logger.success(
+    `Total Meetings Available: ${totalMeetings}`
+  );
+
+  return totalMeetings;
+}
 }

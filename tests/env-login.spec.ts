@@ -19,7 +19,7 @@ const ldapUser = {
 
 /* ==================== TEST SUITE ==================== */
 
-test.describe('Login Module - Authentication Validation (Environment Variables)', () => {
+test.describe('@regression Login Module - Authentication Validation (Environment Variables)', () => {
 
   test.beforeEach(async ({ loginPage }) => {
     Logger.info('Navigating to Login Page');

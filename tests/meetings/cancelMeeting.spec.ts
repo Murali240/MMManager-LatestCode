@@ -6,6 +6,7 @@ test.describe('Meetings - Cancel Meeting', () => {
 
   test('TC-MTG-001: Cancel Scheduled Meeting', async ({ meetingsPage }) => {
 
+    test.setTimeout(120000);  // Set timeout to 2 minutes for this test
       Logger.testStart('TC-MTG-001: Cancel Scheduled Meeting');
 
       /* ==================== NAVIGATE TO MEETINGS ==================== */

@@ -1,4 +1,4 @@
-# 🎭 Playwright Test Automation Framework (ISSI GMS)
+# 🎭 Playwright Test Automation Framework (MM Manager)
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)
 ![Playwright](https://img.shields.io/badge/Playwright-1.57.0-45ba4b?logo=playwright&logoColor=white)
@@ -21,11 +21,11 @@
 
 ## 🎯 What is This Framework?
 
-This is a **professional-grade test automation framework** built for testing the **ISSI GMS (Grants Management System)** web application. It uses **Playwright** with **TypeScript** to automate user interactions, verify system behavior, and ensure quality.
+This is a **professional-grade test automation framework** built for testing the **MM Manager** web application. It uses **Playwright** with **TypeScript** to automate user interactions, verify system behavior, and ensure quality.
 
 ### Key Features:
 - ✅ **Automated End-to-End Testing** - Tests run automatically without manual clicking.
-- ✅ **Multiple User Roles** - Seamlessly test staff, organization, department, and individual user flows.
+- ✅ **Multiple User Roles** - Seamlessly test administrators, schedulers, operations, and guest user flows.
 - ✅ **Smart Test Data** - Generates unique test data for every run (using dynamic factories).
 - ✅ **Comprehensive Reporting** - Generates beautiful HTML and Allure reports with screenshots and test steps.
 - ✅ **Fast Execution** - Reduces run times by caching authentication states automatically.
@@ -38,7 +38,7 @@ This is a **professional-grade test automation framework** built for testing the
 A clean, high-level overview of how the codebase is organized:
 
 ```text
-ISSI GMS/
+MM Manager/
 ├── src/                          # 🧠 Framework Core (The Engine)
 │   ├── constants/                # Fixed values (URLs, error messages, static paths)
 │   ├── enums/                    # TypeScript enums (User roles, menu items)
@@ -48,10 +48,11 @@ ISSI GMS/
 │   └── utils/                    # Helper tools (Logger, assertions, data factories)
 │
 ├── tests/                        # 🧪 Test Files (The actual test case executions)
-│   ├── auth/                     # Authentication & Login tests
-│   ├── department/               # Department module tests
-│   ├── programs/                 # Programs module tests
-│   └── public/                   # Public-facing page tests
+│   ├── dashboard/                # Dashboard tests
+│   ├── meetings/                 # Meetings module tests
+│   ├── diary/                    # Diary module tests
+│   ├── data-driven/              # Data-driven and login variation tests
+│   └── env-login.spec.ts         # Environment login validation test
 │
 ├── testData/                     # 📂 Data Files (JSON, CSV, or Excel formats)
 ├── .auth/                        # 🔐 Cached Logins (Speeds up execution, auto-generated)
@@ -83,7 +84,7 @@ Before you start, make sure you have the following installed on your machine:
 ### 1. Clone the Repository
 ```bash
 git clone <your-repo-url>
-cd "PlayWright Project/ISSI GMS"
+cd "MMManager"
 ```
 
 ### 2. Install Dependencies
@@ -127,8 +128,8 @@ We have configured several convenient NPM scripts inside `package.json`. You can
 ### Running Specific Tests
 | Command | What it does |
 |---------|-------------|
-| `npm test tests/programs/program.spec.ts` | Runs a specific test file. |
-| `npm test tests/auth/staff/staff.login.spec.ts -- --grep "TC-STAFF-LOGIN-001" `
+| `npm test tests/dashboard/scheduleMeetingFromDashboard.spec.ts` | Runs a specific test file. |
+| `npm test tests/env-login.spec.ts` | Runs a login validation test file. |
 | `npm run test:tag @smoke` | Runs all tests tagged with `@smoke`. |
 | `npm run test:regression` | Runs all tests tagged with `@regression`. |
 
@@ -171,30 +172,30 @@ npm run clean:all
 We use the Page Object Model (POM) pattern. This keeps web locators and UI actions visually separated from the actual test script logic. 
 
 ### Step 1: Create a Spec file
-Create `tests/programs/my-first-test.spec.ts` and use the following template:
+Create `tests/dashboard/my-first-test.spec.ts` and use the following template:
 
 ```typescript
-import { test, expect } from '@fixtures/authFixtures';
-import { ProgramsPage } from '@pages/programs/ProgramsPage';
+import { test, expect } from '@fixtures/AuthFixtures';
+import { DashboardPage } from '@pages/DashboardPage';
 import { Logger } from '@utils/logger';
 
 // Group your tests. Adding tags like @smoke is highly encouraged!
 test.describe('My First Feature Suite @smoke', () => {
   
-  test('TC-001: My First Test Scenario', async ({ staffPage }) => {
+  test('TC-001: My First Test Scenario', async ({ dashboardPage }) => {
     Logger.testStart('TC-001: My First Test Scenario');
     
     // Initialize the Page Object
-    const programsPage = new ProgramsPage(staffPage);
+    const dashboard = new DashboardPage(dashboardPage);
     
-    await test.step('Step 1: Navigate to the Programs Page', async () => {
-      await programsPage.navigateToProgramsPage();
+    await test.step('Step 1: Verify the Dashboard loads', async () => {
+      await dashboard.verifyDashboardLoaded();
     });
     
-    await test.step('Step 2: Verify correct initialization', async () => {
-      const currentUrl = await programsPage.getCurrentUrl();
-      expect(currentUrl).toContain('program');
-      Logger.success('Programs page successfully validated!');
+    await test.step('Step 2: Verify schedule meeting navigation', async () => {
+      await dashboard.clickScheduleNewMeeting();
+      await dashboard.verifyScheduleMeetingPage();
+      Logger.success('Dashboard schedule meeting navigation validated!');
     });
     
     Logger.testEnd('TC-001: My First Test Scenario');
@@ -204,7 +205,7 @@ test.describe('My First Feature Suite @smoke', () => {
 
 ### Step 2: Run Your Test
 ```bash
-npm test tests/programs/my-first-test.spec.ts
+npm test tests/dashboard/my-first-test.spec.ts
 ```
 
 ---
@@ -212,11 +213,11 @@ npm test tests/programs/my-first-test.spec.ts
 ## 🛡️ Best Practices & Guidelines
 
 ### DO:
-- **Use Fixtures for Reusability:** Always use predefined fixtures like `{ staffPage }`, `{ orgPage }` instead of manually logging in. The framework will automatically fetch the cached login state from `.auth/`.
+- **Use Fixtures for Reusability:** Always use predefined fixtures like `{ dashboardPage }`, `{ diaryPage }`, and `{ meetingsPage }` instead of manually creating page objects. The framework automatically reuses authenticated sessions from `.auth/`.
 - **Use `test.step()`:** Wrap logical blocks of actions inside `test.step()`. This drastically improves report readability.
 - **Use Data Factories:** Avoid hardcoded data. Utilize the generators in `/src/utils/factories` to dynamically generate unique entries.
   ```typescript
-  const mockProgramData = ProgramFactory.generateBasicInfo();
+  const mockData = TestDataFactory.createDefault();
   ```
 - **Use Centralized Loggers:** Use `Logger.info()`, `Logger.success()`, `Logger.error()` to accurately stream steps instead of standard console logs.
 
@@ -250,5 +251,5 @@ To help new developers get started and scale appropriately:
 
 **Happy Testing!** 🚀
 
-*Maintained By:* Rajasekhar Maddigalla (QA Lead)  
+*Maintained By:* Kolusu Murali Krishna (QA Analyst)  
 *Version:* 1.0.0

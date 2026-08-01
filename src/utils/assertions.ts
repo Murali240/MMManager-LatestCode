@@ -15,14 +15,14 @@ export class Assertions {
     }
   }
 
-  static async verifyElementVisible(
+    static async verifyElementVisible(
     locator: Locator,
     elementName: string,
     timeout: number = 10000
   ): Promise<void> {
     try {
       Logger.info(`Verifying ${elementName} visibility`);
-      await expect(locator).toBeVisible({ timeout: 3000 });
+      await expect(locator).toBeVisible({ timeout });
       Logger.success(`${elementName} is visible`);
     } catch (error) {
       Logger.error(`${elementName} is not visible`);
