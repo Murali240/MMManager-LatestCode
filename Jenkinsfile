@@ -29,6 +29,26 @@ pipeline {
             }
         }
 
+        stage('Create .env File') {
+            steps {
+                writeFile file: '.env', text: '''
+MMM_BASE_URL=https://mmmdemo.issi-software.com
+
+MMM_ADMIN_USERNAME=admin
+MMM_ADMIN_PASSWORD=issi@1234
+
+MMM_LDAP_USERNAME=kmkrishna
+MMM_LDAP_PASSWORD=Gangamma@8
+
+MMM_INVALID_USERNAME=invalidUser
+MMM_INVALID_PASSWORD=invalidPassword
+
+HEADLESS=false
+DEBUG=false
+'''
+            }
+        }
+
         stage('Run Regression Suite') {
             steps {
                 bat 'npx playwright test --grep "@regression"'
@@ -50,6 +70,7 @@ pipeline {
 
             archiveArtifacts artifacts: 'test-results/**', fingerprint: true
 
+            echo 'Pipeline Finished'
         }
 
         success {
