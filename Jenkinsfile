@@ -19,13 +19,14 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                bat 'npm ci'
-            }
-        }
-
-        stage('Install Playwright Browsers') {
-            steps {
-                bat 'npx playwright install'
+                bat '''
+                if not exist node_modules (
+                    echo Installing Node Modules...
+                    npm install
+                ) else (
+                    echo Node Modules already exist. Skipping installation.
+                )
+                '''
             }
         }
 
@@ -54,21 +55,19 @@ DEBUG=false
                 bat 'npx playwright test --grep "@regression" || exit /b 0'
             }
         }
+
     }
 
     post {
 
         always {
 
-            echo 'Archiving Playwright Reports...'
+            echo 'Publishing Reports...'
 
             archiveArtifacts artifacts: 'playwright-report/**', fingerprint: true
-
             archiveArtifacts artifacts: 'allure-results/**', fingerprint: true
-
             archiveArtifacts artifacts: 'test-results/**', fingerprint: true
 
-            // Publish Allure Report
             allure(
                 includeProperties: false,
                 jdk: '',
@@ -85,5 +84,6 @@ DEBUG=false
         failure {
             echo 'Regression Suite Failed'
         }
+
     }
 }
