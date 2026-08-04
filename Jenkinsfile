@@ -19,14 +19,13 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                bat '''
-                if not exist node_modules (
-                    echo Installing Node Modules...
-                    npm install
-                ) else (
-                    echo Node Modules already exist. Skipping installation.
-                )
-                '''
+                bat 'npm ci'
+            }
+        }
+
+        stage('Install Playwright Browsers') {
+            steps {
+                bat 'npx playwright install'
             }
         }
 
@@ -44,7 +43,7 @@ MMM_LDAP_PASSWORD=Gangamma@8
 MMM_INVALID_USERNAME=invalidUser
 MMM_INVALID_PASSWORD=invalidPassword
 
-HEADLESS=true
+HEADLESS=false
 DEBUG=false
 '''
             }
@@ -52,27 +51,24 @@ DEBUG=false
 
         stage('Run Regression Suite') {
             steps {
-                bat 'npx playwright test --grep "@regression" || exit /b 0'
+                bat 'npx playwright test --grep "@regression"'
             }
         }
 
+        stage('Generate HTML Report') {
+            steps {
+                bat 'npx playwright show-report'
+            }
+        }
     }
 
     post {
 
         always {
 
-            echo 'Publishing Reports...'
-
             archiveArtifacts artifacts: 'playwright-report/**', fingerprint: true
-            archiveArtifacts artifacts: 'allure-results/**', fingerprint: true
-            archiveArtifacts artifacts: 'test-results/**', fingerprint: true
 
-            allure(
-                includeProperties: false,
-                jdk: '',
-                results: [[path: 'allure-results']]
-            )
+            archiveArtifacts artifacts: 'test-results/**', fingerprint: true
 
             echo 'Pipeline Finished'
         }
@@ -84,6 +80,5 @@ DEBUG=false
         failure {
             echo 'Regression Suite Failed'
         }
-
     }
 }
