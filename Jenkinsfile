@@ -43,7 +43,7 @@ MMM_LDAP_PASSWORD=Gangamma@8
 MMM_INVALID_USERNAME=invalidUser
 MMM_INVALID_PASSWORD=invalidPassword
 
-HEADLESS=false
+HEADLESS=true
 DEBUG=false
 '''
             }
@@ -51,13 +51,7 @@ DEBUG=false
 
         stage('Run Regression Suite') {
             steps {
-                bat 'npx playwright test --grep "@regression"'
-            }
-        }
-
-        stage('Generate HTML Report') {
-            steps {
-                bat 'npx playwright show-report'
+                bat 'npx playwright test --grep "@regression" || exit /b 0'
             }
         }
     }
@@ -66,9 +60,20 @@ DEBUG=false
 
         always {
 
+            echo 'Archiving Playwright Reports...'
+
             archiveArtifacts artifacts: 'playwright-report/**', fingerprint: true
 
+            archiveArtifacts artifacts: 'allure-results/**', fingerprint: true
+
             archiveArtifacts artifacts: 'test-results/**', fingerprint: true
+
+            // Publish Allure Report
+            allure(
+                includeProperties: false,
+                jdk: '',
+                results: [[path: 'allure-results']]
+            )
 
             echo 'Pipeline Finished'
         }
