@@ -101,7 +101,9 @@ export class BasePage {
   async clickElement(locator: Locator, elementName: string = 'element'): Promise<void> {
     Logger.info(`Clicking on: ${elementName}`);
     await this.waitForElement(locator);
-    await locator.click();
+    await locator.click({
+          timeout: 30000
+      });
   }
 
   /**
